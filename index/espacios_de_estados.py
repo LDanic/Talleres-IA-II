@@ -1,7 +1,7 @@
 from movimiento import movimientos
 
 
-def preorden_soy_unico(nodo, actual_state=None):
+def preorden_soy_unico(nodo, actual_state=None, padre=None):
     """
     Realiza un recorrido en preorden del árbol (raíz → hijos de izquierda a derecha).
     """ 
@@ -11,10 +11,11 @@ def preorden_soy_unico(nodo, actual_state=None):
         actual_state["B1"] == nodo.state["B1"] and 
         actual_state["B2"] == nodo.state["B2"] 
     ):
+        padre.conexiones_grafo.append(nodo)
         return False
     
     for hijo in nodo.hijos:
-        if not preorden_soy_unico(hijo, actual_state):
+        if not preorden_soy_unico(hijo, actual_state, padre):
             return False
     
     return True
@@ -39,8 +40,11 @@ class Nodo:
         self.state = state  
         self.padre = padre  
         self.hijos = []  
+        self.conexiones_grafo = []
         self.profundidad_maxima = profundidad_maxima
         self.profundidad_actual = profundidad_actual
+
+        self.id = "".join(f"{x}{y}" for x, y in state.values())
 
         # Generar movimientos automáticamente si no se ha alcanzado la profundidad máxima
         # if self.profundidad_actual < self.profundidad_maxima:
@@ -51,13 +55,14 @@ class Nodo:
         hijo.profundidad_actual = self.profundidad_actual + 1
         hijo.profundidad_maxima = self.profundidad_maxima
         self.hijos.append(hijo)
+        self.conexiones_grafo.append(hijo)
 
     def agregar_movimientos(self):
         """Agrega los movimientos posibles como hijos del nodo actual."""
         flag_tuvo_hijos = False
         for estado_hijo in movimientos(self.state):
             
-            if preorden_soy_unico(self.raiz, actual_state=estado_hijo):
+            if preorden_soy_unico(self.raiz, actual_state=estado_hijo, padre=self):
                 hijo = Nodo(self.raiz, estado_hijo, self.profundidad_maxima, self.profundidad_actual + 1, self)
                 self.agregar_hijo(hijo)
                 flag_tuvo_hijos = True
@@ -84,7 +89,8 @@ class Nodo:
 
 def imprimir_arbol(nodo, nivel=0):
     """Imprime la estructura del árbol con indentación."""
-    print(" " * (nivel *1) + f"{nivel}└── {nodo.state}")  # Usa indentación para mostrar la jerarquía
+    print(" " * nivel*0 + f"Codigo: {nodo.id} codigos_hijos:" + f"{[nodito.id for nodito in nodo.conexiones_grafo]}")
+  # Usa indentación para mostrar la jerarquía
     for hijo in nodo.hijos:
         imprimir_arbol(hijo, nivel + 1)
 
