@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/home/dani/projects/Espacio de estados caballos/venv/bin/python3" "$0" "$@"
+'''exec' "/home/dani/projects/Talleres IA II/venv/bin/python3" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re
